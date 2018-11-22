@@ -13,6 +13,7 @@ library(dplyr)
 library(tidyverse)
 library(ggrepel)
 library(janitor)
+library(leaflet)
 
 
 #load in data, first being all data and second being coefficient data 
@@ -32,35 +33,48 @@ table1 <- table_data %>% mutate(pair = paste(reporter, partner, sep = " - ")) %>
   select(reporter, partner, year_in_force, pair) %>% 
   rename(Reporter = reporter, Partner = partner, `Year In Force` = year_in_force)
 
+#map 1 data 
+
+map1 <- table_data %>% mutate(pair = paste(reporter, partner, sep = " - ")) %>% 
+  select(pair, reporter_longitude, reporter_latitude, partner_latitude, partner_longitude)
+
 # Define UI for application that plots features of movies 
-ui <- fluidPage(
+ui <- fluidPage(class = "text-center",
   
   # Application title
-  titlePanel("Graph of Exports vs Time "),
+  titlePanel("Investigating Bilateral Free Trade Agreements"),
+  
+  br(),
+  br(),
   
   # Sidebar layout with a input and output definitions 
   sidebarLayout(
     
     # Inputs
-    sidebarPanel(
-      h4("Filters"),
+    sidebarPanel(class = "text-left",
+      h4("Filters", class = "text-center"),
       
-      sliderInput("years", "year range",
-                  1989, 2017, value = c(1989, 2017), step = 1, timeFormat = "%F"),
-      
+      br(),
       
       selectInput(inputId = "pair", 
                   label = "Choose FTA to Investigate",
                   choices = choices, 
                   selected = "Canada - Chile"),
+      br(),
+      
+      sliderInput("years", "year range",
+                  1989, 2017, value = c(1989, 2017), step = 1, timeFormat = "%F"),
+      
+      br(),
       
       
       #create checkbox for user input of states
       checkboxInput("best_fit", label = "Add Lines of Best Fit", value = FALSE),
-      
-      
+ 
       #create checkbox for whether of not to return table with regression data 
       checkboxInput("fe", label = " Add Summary Statistics Below Graph", value = FALSE)
+      
+     
       
     ),
     
@@ -70,13 +84,23 @@ ui <- fluidPage(
     mainPanel(
       
       tabsetPanel(type = "tabs",
-                  tabPanel("FTA Visualization", plotOutput("scatterplot")),
-                  tabPanel("Map of FTA", verbatimTextOutput("map in this panel"))
+                  tabPanel("FTA Visualization", br(), plotOutput("scatterplot")),
+                  tabPanel("Map of FTA", br(), leafletOutput("mymap"))
                   ),
       
-      # plotOutput(outputId = "scatterplot", height = 600, width = 800),
-      # p("Choose from the different parties to see how polling margin of errors vary with voter turnout."),
-       p("You can also select which state elections you would like to view."),
+      br(),
+      br(),
+      
+      
+      
+       p("In the Above plot, the graph shows the exports from the selected country to its trade partner from 1989 - 2017.
+          The vertical black line shows when the Free Trade Agreement came into force between the two countries.
+         Change the time period by adjusting the slider in the side panel, or add regression lines to both before and after 
+         the FTA went into effect to examine how the FTA impacted trade between the two countries.
+         For more information on the selected FTA, click th Show Summary Statistics Button"),
+      
+      br(),
+      
        tableOutput("contents")
     )
   )
@@ -99,8 +123,9 @@ server <- function(input, output) {
     plot1 <- ggplot(data = pair_subset(), aes_string(x = "year", y = "trade_value_us", color = "fta_dummy")) +
       geom_point(size = 3, alpha = 0.8)  +
       geom_vline(xintercept = pair_subset()$year_in_force) +
-      labs(x = "Year", y = "Value of Exports (USD)") +
-      ggtitle("Margin of Error vs Voter Turnout by District")
+      labs(x = "Year", y = "Value of Exports (USD)", color = "FTA Dummy (0 before, 1 after)") +
+      ggtitle(paste("Exports vs Time,", input$pair, sep = " ")) +
+      theme(plot.title = element_text(hjust = 0.5))
     
     print(plot1)
     
@@ -126,6 +151,30 @@ server <- function(input, output) {
       return(df)
     
     
+  })
+  
+  # Create and call map obect for second tab
+  
+  
+  output$mymap <- renderLeaflet({
+    
+    #reformat data so coordinates can be recognised by leaflet function. 2 gathers then a reactive filter as above seems to do the trick
+  
+    req(input$pair)
+    points <- map1 %>% gather(key = "type", value = "lat", reporter_latitude,partner_latitude) %>% 
+      gather(key = "type2", value = "long", reporter_longitude:partner_longitude) %>% 
+      filter(pair %in% input$pair) %>% 
+      slice(-2:-3) %>% 
+      select(lat, long)
+    
+   myMap1 <-  leaflet() %>%
+      addProviderTiles(providers$Esri.NatGeoWorldMap,
+                       options = providerTileOptions(noWrap = TRUE)
+      ) %>%
+      addMarkers(data = points) 
+   
+   myMap1 
+   
   })
 }
 
