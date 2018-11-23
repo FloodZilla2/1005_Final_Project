@@ -125,7 +125,7 @@ server <- function(input, output) {
       geom_vline(xintercept = pair_subset()$year_in_force) +
       labs(x = "Year", y = "Value of Exports (USD)", color = "FTA Dummy (0 before, 1 after)") +
       ggtitle(paste("Exports vs Time,", input$pair, sep = " ")) +
-      theme(plot.title = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5, face = "bold"))
     
     print(plot1)
     
