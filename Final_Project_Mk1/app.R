@@ -14,6 +14,7 @@ library(tidyverse)
 library(ggrepel)
 library(janitor)
 library(leaflet)
+library(DT)
 
 
 #load in data, first being all data and second being coefficient data 
@@ -25,13 +26,13 @@ choices <- plot1 %>% select(pair) %>% distinct %>% pull(pair)
 
 #create additional variable for drop down list 
 
-plot1 <- plot_data %>% mutate(pair = paste(reporter, partner, sep = " - "), fta_dummy = as.factor(fta_dummy))
+plot1 <- plot_data %>% mutate(pair = paste(reporter, partner, sep = " - "), fta_dummy = as.factor(fta_dummy)) 
 
 #table 1 create additional variable to match up with previous regressions
 
-table1 <- table_data %>% mutate(pair = paste(reporter, partner, sep = " - ")) %>% 
-  select(reporter, partner, year_in_force, pair) %>% 
-  rename(Reporter = reporter, Partner = partner, `Year In Force` = year_in_force)
+table1 <- plot_data %>% mutate(pair = paste(reporter, partner, sep = " - "), fta_dummy = as.factor(fta_dummy))  %>%
+  select(pair, year, year_in_force, gdp_country_1, gdp_country_2, trade_value_us) %>%
+  rename(Year = year, `Year In Force` = year_in_force, `Exporter GDP (USD)` = gdp_country_1, `Importer GDP (USD)` = gdp_country_2, `Value of Exports (USD)` = trade_value_us)
 
 #map 1 data 
 
@@ -69,10 +70,10 @@ ui <- fluidPage(class = "text-center",
       
       
       #create checkbox for user input of states
-      checkboxInput("best_fit", label = "Add Lines of Best Fit", value = FALSE),
+      checkboxInput("best_fit", label = "Add Lines of Best Fit", value = FALSE)
  
-      #create checkbox for whether of not to return table with regression data 
-      checkboxInput("fe", label = " Add Summary Statistics Below Graph", value = FALSE)
+      # #create checkbox for whether of not to return table with regression data 
+      # checkboxInput("fe", label = " Add Summary Statistics Below Graph", value = FALSE)
       
      
       
@@ -85,7 +86,8 @@ ui <- fluidPage(class = "text-center",
       
       tabsetPanel(type = "tabs",
                   tabPanel("FTA Visualization", br(), plotOutput("scatterplot")),
-                  tabPanel("Map of FTA", br(), leafletOutput("mymap"))
+                  tabPanel("Map of FTA", br(), leafletOutput("mymap")),
+                  tabPanel("Time Series GDP Data and More", br(), DT::dataTableOutput("table1"))
                   ),
       
       br(),
@@ -138,14 +140,10 @@ server <- function(input, output) {
   })
   
   #create table with coefficients from regressions
-  output$contents <- renderTable({
-    
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, head of that data file by default,
-    # or all rows if selected, will be shown.
+  output$table1 <- DT::renderDataTable({
    
-    req(input$fe)
-      # creates a straight line of best fit with no wide range around it.
+    
+     #filters so only data from selected pair is shown
       df <- table1 %>% filter(pair %in% input$pair) 
       print(df)
       return(df)
