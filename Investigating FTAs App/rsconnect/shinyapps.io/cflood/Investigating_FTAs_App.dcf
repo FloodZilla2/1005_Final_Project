@@ -1,0 +1,12 @@
+name: Investigating_FTAs_App
+title: Investigating_FTAs_App
+username:
+account: cflood
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 603803
+bundleId: 1740622
+url: https://cflood.shinyapps.io/Investigating_FTAs_App/
+when: 1543961145.23229
+asMultiple: FALSE
+asStatic: FALSE
