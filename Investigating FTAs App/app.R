@@ -115,7 +115,7 @@ navbarPage("",
                     p("To view the raw data being used to create the line plot, as well as other variables including yearly
                       GPA data, look under the third tab. Often in trade analysis, GDP variables are included in the given trade model
                       as trade is highly correlated with GDP size. Thus panel GDP data is included for if you would like to download the data
-                  (by clicking the Download button in the side panel) and do your own analysis on the causal impact of the FTA on bilateral exports")
+                  (by clicking the Download button in the side panel) and do your own analysis on the causal impact of the FTA on bilateral exports.")
            ),
                 
            tabPanel("Explore the Data",
