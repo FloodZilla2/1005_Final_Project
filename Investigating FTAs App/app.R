@@ -87,9 +87,9 @@ navbarPage("",
                     #Explaination for how to use the first tab
                     
                     p("The graph, found in the first tab of the exploration page, shows how bilateral exports from the first country listed to the second
-                      have changed over the last 30 years. The Vertical black line shows when the FTA went into the effect, 
-                      the blue points representing data points before the FTA was in effect and the red points representing after.
-                      You can add regression lines by clicking the button in the side panel to see how the trends have changed since the FTA went into effect,
+                      have changed over the last 30 years. The vertical black line shows when the FTA went into the effect, 
+                      the red points represent data points before the FTA was in effect and the blue points represent after.
+                      You can add regression lines by clicking the lines of best fit button in the side panel to see how the trends have changed since the FTA went into effect,
                       or change the time period by ajusting the slider."),
                     
                     br(),
@@ -101,7 +101,7 @@ navbarPage("",
                     #Explain the second tab
                     
                     p("You can find a map pin-pointing the two countries in the agreement under the second tab. 
-                      Zoom in and out using the buttons in the top left corner, and use the mouse to move the area being viewed around"),
+                      Zoom in and out using the buttons in the top left corner, and use the mouse to move around the area being viewed."),
                     
                   
                     br(),
@@ -114,8 +114,8 @@ navbarPage("",
                     
                     p("To view the raw data being used to create the line plot, as well as other variables including yearly
                       GPA data, look under the third tab. Often in trade analysis, GDP variables are included in the given trade model
-                      as trade is highly correlated with GDP size. Thus panel GDP data is included for if you would like to download the data,
-                  (by clicking the Download button in the side panel) and do your own analysis on the impact of the FTA on bilateral exports")
+                      as trade is highly correlated with GDP size. Thus panel GDP data is included for if you would like to download the data
+                  (by clicking the Download button in the side panel) and do your own analysis on the causal impact of the FTA on bilateral exports")
            ),
                 
            tabPanel("Explore the Data",
